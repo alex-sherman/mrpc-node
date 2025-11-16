@@ -8,8 +8,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "call": "node call.js"
+    "call": "node scripts/call.js"
   },
+  "files": [
+    "src/"
+  ],
   "dependencies": {
     "uuid": "^13.0.0"
   }
