@@ -8,12 +8,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "call": "node scripts/call.js"
+    "call": "node scripts/call.js",
+    "bridge": "node scripts/bridge.js"
   },
   "files": [
     "src/"
   ],
   "dependencies": {
+    "@matter/main": "^0.15.6",
     "uuid": "^13.0.0"
   }
 }
