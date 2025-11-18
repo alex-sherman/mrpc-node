@@ -62,7 +62,9 @@ for (let i = 0; i < lights.length; i++) {
   await aggregator.add(endpoint);
 
   endpoint.events.onOff.onOff$Changed.on((value) => {
-    mrpc.Call(`${lights[i]}.light`, value);
+    try {
+      mrpc.call(`${lights[i]}.light`, value);
+    } catch {}
   });
 }
 
