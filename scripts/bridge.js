@@ -8,8 +8,10 @@
 import { Endpoint, Environment, Logger, ServerNode, StorageService, VendorId } from "@matter/main";
 import { BridgedDeviceBasicInformationServer } from "@matter/main/behaviors/bridged-device-basic-information";
 import { OnOffLightDevice } from "@matter/main/devices/on-off-light";
+import { DoorLockDevice } from "@matter/main/devices/door-lock";
 import { AggregatorEndpoint } from "@matter/main/endpoints/aggregator";
 import MRPC from "../src/mrpc.js";
+import { DoorLock } from "@matter/main/clusters";
 
 /** Initialize configuration values */
 const uniqueId = "1763334410562";
@@ -45,6 +47,7 @@ await server.add(aggregator);
 
 let mrpc = new MRPC();
 let lights = ["Dining", "Office", "LivingRoom", "Nook", "Bedroom"];
+let locks = ["Garage"];
 
 for (let i = 0; i < lights.length; i++) {
   const name = `${lights[i]}`;
@@ -65,6 +68,34 @@ for (let i = 0; i < lights.length; i++) {
     try {
       mrpc.call(`${lights[i]}.light`, value);
     } catch {}
+  });
+}
+
+for (let i = 0; i < locks.length; i++) {
+  const name = `${locks[i]}`;
+
+  const endpoint = new Endpoint(DoorLockDevice.with(BridgedDeviceBasicInformationServer), {
+    id: `lock-${i}`,
+    bridgedDeviceBasicInformation: {
+      nodeLabel: name, // Main end user name for the device
+      productName: name,
+      productLabel: name,
+      serialNumber: `node-matter-lock-${uniqueId}-${i}`,
+      reachable: true,
+    },
+    doorLock: {
+      lockState: DoorLock.LockState.Locked,
+      lockType: DoorLock.LockType.CylindricalLock,
+      actuatorEnabled: true,
+      operatingMode: DoorLock.OperatingMode.Normal,
+    },
+  });
+  await aggregator.add(endpoint);
+  endpoint.events.doorLock.lockState$Changed.on(async (state) => {
+    try {
+      mrpc.call(`${locks[i]}.open`, true);
+    } catch {}
+    await endpoint.set({ doorLock: { lockState: 1 } });
   });
 }
 
