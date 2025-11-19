@@ -92,10 +92,11 @@ for (let i = 0; i < locks.length; i++) {
   });
   await aggregator.add(endpoint);
   endpoint.events.doorLock.lockState$Changed.on(async (state) => {
+    if (state === DoorLock.LockState.Locked) return;
     try {
       mrpc.call(`${locks[i]}.open`, true);
     } catch {}
-    await endpoint.set({ doorLock: { lockState: 1 } });
+    await endpoint.set({ doorLock: { lockState: DoorLock.LockState.Locked } });
   });
 }
 
