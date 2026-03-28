@@ -1,0 +1,1 @@
+npm run bridge -- --storage-path=.data --log-level=INFO
