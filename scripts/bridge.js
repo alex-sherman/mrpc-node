@@ -64,9 +64,9 @@ for (let i = 0; i < lights.length; i++) {
   });
   await aggregator.add(endpoint);
 
-  endpoint.events.onOff.onOff$Changed.on((value) => {
+  endpoint.events.onOff.onOff$Changed.on(async (value) => {
     try {
-      mrpc.call(`${lights[i]}.light`, value);
+      await mrpc.call(`${lights[i]}.light`, value);
     } catch {}
   });
 }
@@ -94,7 +94,7 @@ for (let i = 0; i < locks.length; i++) {
   endpoint.events.doorLock.lockState$Changed.on(async (state) => {
     if (state === DoorLock.LockState.Locked) return;
     try {
-      mrpc.call(`${locks[i]}.open`, true);
+      await mrpc.call(`${locks[i]}.open`, true);
     } catch {}
     await endpoint.set({ doorLock: { lockState: DoorLock.LockState.Locked } });
   });
