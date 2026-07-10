@@ -6,7 +6,7 @@ export default class MRPC {
     this.id = crypto.randomUUID();
     this.server = createSocket("udp4");
     this.server.on("message", this.onRecv.bind(this));
-    this.server.bind({ port: 50123, reuseAddr: true });
+    this.server.bind({ port: 50123, reuseAddr: true }, () => { this.server.setBroadcast(true); });
     this.rpcId = 0;
     this.pending = {};
     this.pathCache = {};
